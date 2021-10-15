@@ -1,0 +1,67 @@
+/* .tabla, td, tr, th, thead, tbody {
+    border: black 1px solid;
+    border-collapse: collapse;
+} */
+
+table,td,tr,th{
+    color: white;
+    text-align: center;
+    border: 1px solid white;
+    border-collapse: collapse;
+    padding: 6px;
+}
+
+table{
+    margin-bottom: 5%;
+}
+
+th{
+    font-family: monospace;
+    background-color: #15171c;
+    text-transform: uppercase;
+}
+
+a{
+    color: white;
+}
+
+.resaltado{
+    background-color: black;
+}
+
+.tablaGeneros{
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%;
+    color: white;
+    text-align: center;
+}
+
+.tablaGeneros td{
+    background-color: #aa68a5;
+    border: 1px solid white;
+}
+
+.contenedorLR{
+    text-align: center;
+}
+
+.efecto{
+    text-align: center;
+    animation: pulse 10s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        background-color: red;
+    }
+    25% {
+        background-color: violet;
+    }
+    50% {
+        background-color: yellow;
+    }
+    100% {
+        background-color: red;
+    }
+}

@@ -1,0 +1,21 @@
+.listaAdmin {
+    margin: 20px 0px 10px 0px;
+}
+
+.formAgregar {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: centers;
+    width: 50%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    color: white;
+}
+
+.formAgregar input, textarea, button, select{
+    background-color: rgb(230, 230, 230);
+    margin: auto;    
+}
