@@ -1,6 +1,6 @@
 {include file='templates/header.tpl'}
 
-<form action="{$url}" method="POST" class="formAgregarItem">
+<form action="{$url}" method="POST" class="formAgregarItem" enctype="multipart/form-data">
     <label for="titulo">Titulo</label>
     {if $titulo neq ""}
         <input type="text" name="nombre" id="titulo" value="{$titulo}" required>
@@ -61,6 +61,18 @@
     {else}
         <input type="number" name="cantTemps" id="cTemps" min="0">
     {/if}
+    <br>
+    {if isset($imagen)}
+        <img class="imagen" src="{$imagen}"/>
+        <h1>Si sube otra imagen se actualizara la actual.</h1>
+        <br>
+    {else}
+        <h1>El contenido actual no posee imagen.</h1>
+    {/if}
+    <div class="form-imagenes">
+        <input type="file" name="input_name" id="imageToUpload">
+    </div>
+
     <button>Enviar</button>
 </form>
 

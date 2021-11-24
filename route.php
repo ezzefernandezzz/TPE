@@ -47,6 +47,9 @@ switch ($params[0]) {
             $parametro = $params[1];
         $contenidoController-> cargarContenidoEspecifico($parametro);
         break;
+    case 'filtrarContenido':
+        $contenidoController-> cargarContenidoFiltrado();
+        break;
     case 'genero':
         $contenidoController-> cargarContenidoGenero($params[1]);
         break;
@@ -55,6 +58,15 @@ switch ($params[0]) {
         break;
     case 'adminContenido':
         $adminController -> adminListaContenido();
+        break;
+    case 'adminUsuarios':
+        $adminController -> adminListaUsuarios();
+        break;
+    case 'actualizarUsuario':
+        $adminController -> modificarRolUsuario($params[1]);
+        break;
+    case 'eliminarUsuario':
+        $adminController -> eliminarUsuario($params[1]);
         break;
     case 'agregar':
         $adminController-> agregarContenido();

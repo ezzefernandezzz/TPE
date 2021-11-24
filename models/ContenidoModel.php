@@ -15,6 +15,20 @@ class ContenidoModel{
         return $tabla;
     }
 
+    function fetchTablaContenido($offset){
+        $query = $this->db->prepare("SELECT * FROM contenido LIMIT 5 OFFSET $offset");
+        $query->execute();
+        $tabla = $query->fetchAll(PDO::FETCH_OBJ);
+        return $tabla;
+    }
+
+    function fetchContenidoFiltrado($filtro, $busqueda){
+        $query = $this->db->prepare("SELECT * FROM contenido WHERE $filtro LIKE ?");
+        $query->execute(array($busqueda));
+        $tabla = $query->fetchAll(PDO::FETCH_OBJ);
+        return $tabla;
+    }
+
     function fetchTablas() {
         $query = $this->db->prepare("SELECT contenido.*, genero.nombreGenero FROM contenido 
             INNER JOIN genero ON contenido.id_genero = genero.id_genero");
@@ -41,21 +55,35 @@ class ContenidoModel{
 
     //ADMIN
     function agregarContenido($nombre, $descripcion, $actores, $id_genero,
-        $cantCaps, $cantTemps, $anio) 
+        $cantCaps, $cantTemps, $anio, $imagen = null) 
     {
+        $pathImg = null;
+        if ($imagen)
+            $pathImg = $this->uploadImage($imagen);
+
         $query = $this->db->prepare("INSERT INTO contenido(nombreContenido, descripcion, actores,
-            id_genero, cantidadCapitulos, cantidadTemporadas, anio) VALUES(?,?,?,?,?,?,?)");
-        $query->execute(array($nombre, $descripcion, $actores, $id_genero, $cantCaps, $cantTemps, $anio));
+            id_genero, cantidadCapitulos, cantidadTemporadas, anio, imagen) VALUES(?,?,?,?,?,?,?,?)");
+        $query->execute(array($nombre, $descripcion, $actores, $id_genero, $cantCaps, $cantTemps, $anio, $pathImg));
         header('Location:'. BASE_URL . 'adminContenido');         
     }
 
+    private function uploadImage($image){
+        $target = 'img/imagenes-contenido/' . uniqid() . '.jpg';
+        move_uploaded_file($image, $target);
+        return $target;
+    }
+
+
     //ADMIN
     function modificarContenido($id, $nombre, $descripcion, $actores, $id_genero,
-        $cantCaps, $cantTemps, $anio) 
+        $cantCaps, $cantTemps, $anio, $imagen) 
     {
+        $pathImg = null;
+        if ($imagen)
+            $pathImg = $this->uploadImage($imagen);
         $query = $this->db->prepare("UPDATE contenido SET nombreContenido = ?, descripcion = ?, 
-            actores = ?, id_genero = ?, cantidadCapitulos = ?, cantidadTemporadas = ?, anio = ? WHERE id_contenido = ?");
-        $query->execute(array($nombre, $descripcion, $actores, $id_genero, $cantCaps, $cantTemps, $anio, $id));
+            actores = ?, id_genero = ?, cantidadCapitulos = ?, cantidadTemporadas = ?, anio = ?, imagen = ? WHERE id_contenido = ?");
+        $query->execute(array($nombre, $descripcion, $actores, $id_genero, $cantCaps, $cantTemps, $anio, $pathImg, $id));
         header('Location:'. BASE_URL . 'adminContenido');         
     }
 

@@ -6,13 +6,15 @@ class AuthHelper {
     }
 
     function refreshSession() {
-        session_start();
+        if (!isset($_SESSION))
+            session_start();
     }
 
-    function login($user) {
+    function login($user, $rol) {
         session_start();
         $_SESSION['username'] = $user;
         $_SESSION['logged'] = true;
+        $_SESSION['rol'] = $rol;
     }
 
     function logout() {
@@ -28,8 +30,14 @@ class AuthHelper {
         }
     }
 
+    function userIsAdmin() {
+        if (isset($_SESSION['rol'])) {
+            return $_SESSION['rol'] == 1;
+            die();
+        }
+    }
+
     function getUsername() {
-        session_start();
         if (isset($_SESSION['username'])) {
             return $_SESSION['username'];
         }

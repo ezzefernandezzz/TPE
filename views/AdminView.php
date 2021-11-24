@@ -19,17 +19,10 @@ class AdminView {
     }
 
     function renderizarContenidoAdmin($contenido, $generos) {
-        $this->datosSesion();
-
+        $this->datosSesion(); 
         $this->smarty->assign("generos", $generos);
         $this->smarty->assign("contenidos", $contenido);
-        //3.lo invoco para renderizar 
         $this->smarty->display("templates/listaAdmin.tpl");
-        //$this->smarty->display("templates/listaContenido.tpl");
-        //$this->smarty->display("templates/formItem.tpl"); // --> No tiene que llamarse aca
-        // mostrarFormItem()
-        // Editar -> obtiene ID del contenido y te lo pasa a los inputs
-        // Agregar -> Puede ser un boton O estar abajo de todo.
     }
 
     function mostrarFormAgregarContenido($generos){
@@ -50,6 +43,7 @@ class AdminView {
     function FormEditarContenido($contenido ,$generos, $id){
         $this->datosSesion();
 
+        $this->smarty->assign('imagen', $contenido->imagen);
         $this->smarty->assign('url', BASE_URL.'enviarModificaciones/'.$id);
         $this->smarty->assign('titulo',$contenido->nombreContenido);
         $this->smarty->assign('descripcion', $contenido->descripcion);
@@ -77,6 +71,13 @@ class AdminView {
         $this->smarty->assign('nombreGenero', "");
         $this->smarty->assign('descripcionGenero', "");
         $this->smarty->display("templates/formGenero.tpl");
+    }
+
+    function mostrarUsuarios($usuarios){
+        $this->datosSesion();
+        $this->smarty->assign('url', BASE_URL.'actualizarUsuario');
+        $this->smarty->assign('usuarios', $usuarios);
+        $this->smarty->display("templates/listaUsuarios.tpl");
     }
 
 }

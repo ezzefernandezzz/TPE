@@ -4,11 +4,16 @@ include_once "./models/GenerosModel.php";
 include_once "./views/ContenidoView.php";
 include_once "./views/AdminView.php";
 include_once "helpers/AuthHelper.php";
+include_once "models/UserModel.php";
 
 class ContenidoController{
+
     private $model;
+    private $modelGenero;
     private $view;
     private $adminView;
+    private $auth;
+    private $userModel;
 
     public function __construct(){
         $this->model = new ContenidoModel();
@@ -16,14 +21,40 @@ class ContenidoController{
         $this->view = new ContenidoView();
         $this->adminView = new AdminView();
         $this->auth = new AuthHelper();
+        $this->userModel = new UserModel();
     }
 
     function showHome(){
         $this->auth->refreshSession();
-        $contenido = $this->model->fetchTabla("contenido");
-        $this->view->renderizarListaContenido($contenido);
+        $actual = 0;
+        if (isset($_POST['actual']))
+            $actual = $_POST['actual'];
+        if (isset($_POST['botonAtras'])) {
+            $actual = $actual - 5;
+        } else if (isset($_POST['botonSiguiente'])) {
+            $actual = $actual + 5;
+        }
+        if ($actual < 0)
+            $actual = 0;
+        $contenido = $this->model->fetchTablaContenido($actual);
+        if (!$contenido)
+            $actual = 0;
+        $contenido = $this->model->fetchTablaContenido($actual);
+        $this->view->renderizarListaContenido($contenido, null, $actual, 'home');
     }
-
+    
+    function cargarContenidoFiltrado() {
+        $this->auth->refreshSession();
+        if (isset($_POST['campo-filtrar'], $_POST['campo-busqueda'])) {
+            $campoFiltrar = $_POST['campo-filtrar'];
+            $valorBusqueda = $_POST['campo-busqueda'];
+            $valorBusqueda = "%".$valorBusqueda."%";
+            $contenido = $this->model->fetchContenidoFiltrado($campoFiltrar, $valorBusqueda);
+        }  else
+            $contenido = $this->model->fetchTablaContenido(0);
+            $this->view->renderizarListaContenido($contenido);
+    }
+    
     function cargarGeneros(){
         $this->auth->refreshSession();
         $generos = $this->model->fetchTabla("genero");
@@ -33,12 +64,20 @@ class ContenidoController{
     function cargarContenidoEspecifico($id = null){
         $this->auth->refreshSession();
         if($id){
+            $nombreUsuario = $this->auth->getUsername();
+            $usuario = $this->userModel->getUser($nombreUsuario);
+            if ($usuario)
+                $id_usuario = $usuario->id_usuario;
+            else {
+                $id_usuario = null;
+            }
             $contenido = $this->model->fetchPorIdContenido($id);
-            $this->view->renderizarListaContenidoEspecifico($contenido);
+            $this->view->renderizarListaContenidoEspecifico($contenido, $id_usuario, $this->auth->userIsAdmin());
         }
         else
             $this->view->mensajeError();
     }
+
 
     function cargarContenidoGenero($id = null){
         $this->auth->refreshSession();
@@ -51,63 +90,5 @@ class ContenidoController{
             $this->view->mensajeError();
     }
 
-    ///////////////////////FUNCIONES ABM///////////////////////
-    function agregarContenido(){
-        $this->auth->checkLoggedIn();
-        $generos = $this->model->fetchTabla("genero");
-        $this->adminView->mostrarFormAgregarContenido($generos);
-    }
-
-    function eliminarContenido($id){
-        $this->model->eliminarContenido($id);
-    }
-
-    function editarContenido($id){
-        $contenidoAEditar = $this->model->fetchPorIdContenido($id);
-        $generos = $this->model->fetchTabla("genero");
-        $this->adminView->mostrarFormEditar($contenidoAEditar, $generos, $id);
-    }
-
-    ////////////////////////GENEROS///////////
-    function agregarGenero(){
-        $this->cargarGeneros();
-        $this->adminView->mostrarFormAgregarGenero();
-    }
-
-    function eliminarGenero($id){
-        $this->model->eliminarGenero($id);
-    }
-
-    function editarGenero($id){
-        $generoAEditar = $this->model->fetchPorGenero($id);
-        $this->adminView->mostrarFormEditar($generoAEditar, $id);
-    }
-    ////////////////////////////////////////////////////////
-
-    function verificarDatosContenido(){
-        return isset($_POST['nombre'],$_POST['descripcion'], $_POST['actores'], $_POST['genero'],
-            $_POST['anio'], $_POST['cantCaps'], $_POST['cantTemps']);
-    }
-
-    function enviarNuevoContenido() {
-        $this->model->agregarContenido($_POST['nombre'], $_POST['descripcion'], $_POST['actores'], $_POST['genero']
-        , $_POST['cantCaps'], $_POST['cantTemps'], $_POST['anio']);
-    }
-
-    function enviarModificaciones($id){
-        if (verificarDatosContenido()) 
-            $this->model-> modificarContenido($id, $_POST['nombre'], $_POST['descripcion'], $_POST['actores'], $_POST['genero']
-            , $_POST['cantCaps'], $_POST['cantTemps'], $_POST['anio']);
-    }
-
-    function verificarDatosGenero(){
-        return isset($_POST['nombre'], $_POST['descripcion']);
-    }
-
-    function enviarNuevoGenero() {
-        $this->model->agregarGenero($_POST['nombre'], $_POST['descripcion']);
-    }
-
 }
-
 

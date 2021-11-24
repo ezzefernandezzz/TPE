@@ -31,10 +31,9 @@ class LoginController {
      
             // Obtengo el usuario de la base de datos
             $user = $this->model->getUser($usuario);
-
             // Si el usuario existe y las contraseñas coinciden
             if ($user && password_verify($password, $user->password)) {
-                $this->auth->login($user->nombreUsuario);                
+                $this->auth->login($user->nombreUsuario, $user->administrador);                
                 $this->view->showHome();
             } else {
                 $this->view->showLogin("Acceso denegado");
